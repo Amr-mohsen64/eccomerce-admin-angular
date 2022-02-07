@@ -1,0 +1,132 @@
+<div class="container">
+    <form [formGroup]="userRegForm" (ngSubmit)="submit()">
+        <div class="form-group p-2">
+            <label for="fName">FullName</label>
+            <input type="text" formControlName="fullName" class="form-control" id="fName" name="fName"
+                [class.is-invalid]="fullName?.invalid &&fullName?.touched" [class.is-valid]="fullName?.valid">
+            <div [hidden]="fullName?.valid || fullName?.untouched">
+                <div *ngIf="fullName?.errors?.['required']" class="form-text text-danger">full Name is required.</div>
+                <div *ngIf="fullName?.errors?.['pattern']" class="form-text text-danger">full name must be 3 letters at
+                    least , <span class="fw-bold">({{fullName?.errors?.['pattern'].actualValue}})</span> does not match
+                </div>
+            </div>
+        </div>
+        <div class="form-group p-2">
+            <label for="uEmail">Email</label>
+            <input type="text" formControlName="email" class="form-control" id="uEmail" name="userEmail"
+                [class.is-invalid]="email?.invalid && email?.touched" [class.is-valid]="email?.valid">
+            <div [hidden]="email?.valid || email?.untouched">
+                <div *ngIf="email?.errors?.['required']" class="form-text text-danger">email is required.</div>
+                <div *ngIf="email?.errors?.['email']" class="form-text text-danger">please write right email </div>
+                <div *ngIf="email?.errors?.['existEmail']" class="form-text text-danger">email already exist
+                    ,{{email?.errors?.['existEmail'].myvalue}}</div>
+            </div>
+        </div>
+        <div formArrayName="phoneNo">
+            <div class="form-group p-2 ms-3" *ngFor="let phoneNo of phoneNumbers.controls ;let i = index">
+                <label for="{{'uPhone-'+i}}">Phone No. {{i+1}}</label>
+                <input type="text" [formControlName]="i" class="form-control" id="{{'uPhone-'+(i+1)}}"
+                    name="{{'userPhone-'+(i+1)}}">
+                <button [disabled]="phoneNumbers.controls[i]?.invalid" class="btn btn-primary"
+                    (click)="addPhoneNumber($event)">+</button>
+                <button [hidden]="i==0" (click)="removePhone(i)" class="btn btn-success">-</button>
+            </div>
+        </div>
+
+        <div formGroupName="address">
+            <div class="form-group p-2">
+                <label for="uCity">City</label>
+                <input type="text" formControlName="city" class="form-control" id="uCity" name="userCity"
+                    [class.is-invalid]="city?.invalid && city?.touched" [class.is-valid]="city?.valid">
+                <div [hidden]="city?.valid || city?.untouched">
+                    <div *ngIf="city?.errors?.['required']" class="form-text text-danger">city is required.</div>
+                </div>
+            </div>
+            <div class="form-group p-2">
+                <label for="uPostalCode">postalCode</label>
+                <input type="text" formControlName="postalCode" class="form-control" id="uPostalCode"
+                    name="userPostalCode" [class.is-invalid]="postalCode?.invalid && postalCode?.touched"
+                    [class.is-valid]="postalCode?.valid">
+                <div [hidden]="postalCode?.valid || postalCode?.untouched">
+                    <div *ngIf="postalCode?.errors?.['required']" class="form-text text-danger">postalCode is required.
+                    </div>
+                </div>
+            </div>
+            <div class="form-group p-2">
+                <label for="uStreet">street</label>
+                <input type="text" formControlName="street" class="form-control" id="uPostalCode" name="userPostalCode"
+                    [class.is-invalid]="street?.invalid && street?.touched" [class.is-valid]="street?.valid">
+                <div [hidden]="street?.valid || street?.untouched">
+                    <div *ngIf="street?.errors?.['required']" class="form-text text-danger">street is required.
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group p-2">
+            <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                <input type="radio" class="btn-check" formControlName="referral" name="referral" id="btnradio1"
+                    autocomplete="off" checked value="SocialMedaia" (change)="updateReferalValidators()">
+                <label class="btn btn-outline-primary" for="btnradio1">SocialMedaia</label>
+
+                <input type="radio" class="btn-check" formControlName="referral" name="referral" id="btnradio2"
+                    autocomplete="off" value="Friend" (change)="updateReferalValidators()">
+                <label class="btn btn-outline-primary" for="btnradio2">Friend</label>
+
+                <input type="radio" class="btn-check" formControlName="referral" name="referral" id="btnradio3"
+                    autocomplete="off" value="other" (change)="updateReferalValidators()">
+                <label class="btn btn-outline-primary" for="btnradio3">other</label>
+            </div>
+        </div>
+
+        <div class="form-group p-2 ms-3" *ngIf="referral?.value=='other'">
+            <label for="sepcify" class="form-label">sepcify</label>
+            <input type="text" class="form-control" formControlName="referralOther" id="sepcify">
+        </div>
+        <div class="form-group p-2">
+            <label for="uPassword">password</label>
+            <input type="password" formControlName="password" class="form-control" id="uPassword" name="userPassword"
+                [class.is-invalid]="password?.invalid  && password?.touched" [class.is-valid]="password?.valid">
+            <div [hidden]="password?.valid || password?.untouched">
+                <div *ngIf="password?.errors?.['required']" class="form-text text-danger">Password is required.
+                </div>
+                <div *ngIf="password?.errors?.['minlength']" class="form-text text-danger">Password must be 5</div>
+            </div>
+        </div>
+        <div class="form-group p-2">
+            <label for="uCPassword">Confirm Password</label>
+            <input type="password" formControlName="confirmPassword" class="form-control" id="uCPassword"
+                name="userCPassword" [class.is-invalid]="confirmPassword?.invalid  && confirmPassword?.touched"
+                [class.is-valid]="confirmPassword?.valid">
+            <div
+                *ngIf="(confirmPassword?.touched && password?.touched) && (confirmPassword?.valid || userRegForm?.errors?.['UnmatchedPassword']) ">
+                <div *ngIf="confirmPassword?.errors?.['required']&&confirmPassword?.touched" class="form-text text-danger">confirmPassword is
+                    required.</div>
+                <div *ngIf="confirmPassword?.errors?.['minlength']" class="form-text text-danger">confirmPassword must
+                    be 5 letters atleast</div>
+                <div *ngIf="userRegForm?.errors?.['UnmatchedPassword']" class="form-text text-danger">confirmPassword
+                    must match password</div>
+            </div>
+        </div>
+
+        <button [disabled]="userRegForm.invalid" type="submit" class="btn btn-primary">Submit</button>
+    </form>
+    <hr>
+
+    <div class="text-danger">
+        <h3>to be removed </h3>
+        <div>
+            {{userRegForm.value | json}}
+        </div>
+        <div>
+            {{password?.errors | json}}
+        </div>
+
+        <div>
+            referal ::{{referralOther?.errors | json}}
+        </div>
+
+        <div>
+            confrmpass ::{{userRegForm?.errors | json}}
+        </div>
+    </div>
+</div>

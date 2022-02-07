@@ -1,0 +1,12 @@
+<div class="container mt-5">
+    <form>
+        <div class="form-group mb-3">
+            <input type="text" class="form-control" placeholder="Enter User Name" [(ngModel)]="userName" name="userName">
+        </div>
+        <div class="form-group mb-3">
+            <input type="password" class="form-control" placeholder="Enter User Password"  [(ngModel)]="password" name="password">
+        </div>
+        <button [disabled]="isUserLogged" class="btn btn-primary m-3 " (click)="login()">Login</button>
+        <!-- <button [disabled]="!isUserLogged" class="btn btn-success m-3 " (click)="logout()">Logout</button> -->
+    </form>
+</div>
